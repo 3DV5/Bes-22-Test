@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title %}{% if editing %}Editar Tarefa{% else %}Nova Tarefa{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">
+          <i class="bi bi-{% if editing %}pencil{% else %}plus-circle{% endif %} me-2 text-primary"></i>
+          {% if editing %}Editar Tarefa{% else %}Nova Tarefa{% endif %}
+        </h5>
+      </div>
+      <div class="card-body p-4">
+        <form method="post" novalidate>
+
+          {# Título #}
+          <div class="mb-3">
+            <label for="title" class="form-label fw-semibold">
+              Título <span class="text-danger">*</span>
+            </label>
+            <input type="text" id="title" name="title" maxlength="100"
+                   class="form-control {% if errors.title %}is-invalid{% endif %}"
+                   value="{{ form_data.get('title', '') }}"
+                   placeholder="Título da tarefa (máx. 100 caracteres)">
+            {% if errors.title %}
+              <div class="invalid-feedback">{{ errors.title }}</div>
+            {% endif %}
+            <div class="form-text text-end" id="title-counter">
+              <span id="title-count">{{ form_data.get('title', '')|length }}</span>/100
+            </div>
+          </div>
+
+          {# Descrição #}
+          <div class="mb-3">
+            <label for="description" class="form-label fw-semibold">Descrição</label>
+            <textarea id="description" name="description" maxlength="500" rows="3"
+                      class="form-control {% if errors.description %}is-invalid{% endif %}"
+                      placeholder="Descrição opcional (máx. 500 caracteres)">{{ form_data.get('description', '') }}</textarea>
+            {% if errors.description %}
+              <div class="invalid-feedback">{{ errors.description }}</div>
+            {% endif %}
+            <div class="form-text text-end">
+              <span id="desc-count">{{ form_data.get('description', '')|length }}</span>/500
+            </div>
+          </div>
+
+          <div class="row g-3">
+            {# Prazo #}
+            <div class="col-sm-6">
+              <label for="deadline" class="form-label fw-semibold">
+                Prazo <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="deadline" name="deadline"
+                     class="form-control {% if errors.deadline %}is-invalid{% endif %}"
+                     value="{{ form_data.get('deadline', '') }}"
+                     placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off">
+              {% if errors.deadline %}
+                <div class="invalid-feedback">{{ errors.deadline }}</div>
+              {% endif %}
+              <div class="form-text">Formato: DD/MM/AAAA</div>
+            </div>
+
+            {# Responsável #}
+            <div class="col-sm-6">
+              <label for="responsible_id" class="form-label fw-semibold">
+                Responsável <span class="text-danger">*</span>
+              </label>
+              <select id="responsible_id" name="responsible_id"
+                      class="form-select {% if errors.responsible_id %}is-invalid{% endif %}">
+                <option value="">Selecione...</option>
+                {% for u in users %}
+                  <option value="{{ u.id }}"
+                    {% if form_data.get('responsible_id', '')|string == u.id|string %}selected{% endif %}>
+                    {{ u.name }} ({{ u.role }})
+                  </option>
+                {% endfor %}
+              </select>
+              {% if errors.responsible_id %}
+                <div class="invalid-feedback">{{ errors.responsible_id }}</div>
+              {% endif %}
+            </div>
+
+            {# Prioridade #}
+            <div class="col-sm-6">
+              <label for="priority" class="form-label fw-semibold">Prioridade</label>
+              <select id="priority" name="priority" class="form-select {% if errors.priority %}is-invalid{% endif %}">
+                {% for val, label in [('baixa','Baixa'),('media','Média'),('alta','Alta')] %}
+                  <option value="{{ val }}"
+                    {% if form_data.get('priority', 'media') == val %}selected{% endif %}>
+                    {{ label }}
+                  </option>
+                {% endfor %}
+              </select>
+              {% if errors.priority %}
+                <div class="invalid-feedback">{{ errors.priority }}</div>
+              {% endif %}
+            </div>
+
+            {# Status #}
+            <div class="col-sm-6">
+              <label for="status" class="form-label fw-semibold">Status</label>
+              <select id="status" name="status" class="form-select {% if errors.status %}is-invalid{% endif %}">
+                {% for val, label in [('pendente','Pendente'),('em_andamento','Em andamento'),('concluida','Concluída')] %}
+                  <option value="{{ val }}"
+                    {% if form_data.get('status', 'pendente') == val %}selected{% endif %}>
+                    {{ label }}
+                  </option>
+                {% endfor %}
+              </select>
+              {% if errors.status %}
+                <div class="invalid-feedback">{{ errors.status }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <hr class="my-4">
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-{% if editing %}check-lg{% else %}plus-lg{% endif %} me-1"></i>
+              {% if editing %}Salvar alterações{% else %}Criar tarefa{% endif %}
+            </button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Character counter helpers (also set up in main.js, but safe to repeat)
+  document.addEventListener('DOMContentLoaded', function () {
+    setupCounter('title', 'title-count', 100);
+    setupCounter('description', 'desc-count', 500);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}Relatórios{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0 fw-bold">
+    <i class="bi bi-bar-chart-line me-2 text-primary"></i>Relatório de Tarefas
+  </h4>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('export_csv', **request.args) }}"
+       class="btn btn-outline-success btn-sm">
+      <i class="bi bi-filetype-csv me-1"></i>Exportar CSV
+    </a>
+    <a href="{{ url_for('export_pdf', **request.args) }}"
+       class="btn btn-outline-danger btn-sm">
+      <i class="bi bi-filetype-pdf me-1"></i>Exportar PDF
+    </a>
+  </div>
+</div>
+
+{# ── Filters ─────────────────────────────────────────────────────────── #}
+<div class="card shadow-sm mb-3">
+  <div class="card-body py-2">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="form-label small mb-1">Prazo de</label>
+        <input type="text" name="date_from" class="form-control form-control-sm"
+               placeholder="DD/MM/AAAA" value="{{ date_from }}" maxlength="10">
+      </div>
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="form-label small mb-1">Prazo até</label>
+        <input type="text" name="date_to" class="form-control form-control-sm"
+               placeholder="DD/MM/AAAA" value="{{ date_to }}" maxlength="10">
+      </div>
+      <div class="col-12 col-sm-6 col-md-3">
+        <label class="form-label small mb-1">Responsável</label>
+        <select name="responsible" class="form-select form-select-sm">
+          <option value="">Todos</option>
+          {% for u in users %}
+            <option value="{{ u.id }}" {% if filter_responsible == u.id|string %}selected{% endif %}>
+              {{ u.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="form-label small mb-1">Prioridade</label>
+        <select name="priority" class="form-select form-select-sm">
+          <option value="">Todas</option>
+          <option value="alta" {% if filter_priority == 'alta' %}selected{% endif %}>Alta</option>
+          <option value="media" {% if filter_priority == 'media' %}selected{% endif %}>Média</option>
+          <option value="baixa" {% if filter_priority == 'baixa' %}selected{% endif %}>Baixa</option>
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="form-label small mb-1">Status</label>
+        <select name="status" class="form-select form-select-sm">
+          <option value="">Todos</option>
+          <option value="pendente" {% if filter_status == 'pendente' %}selected{% endif %}>Pendente</option>
+          <option value="em_andamento" {% if filter_status == 'em_andamento' %}selected{% endif %}>Em andamento</option>
+          <option value="concluida" {% if filter_status == 'concluida' %}selected{% endif %}>Concluída</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-1 d-flex gap-1">
+        <button type="submit" class="btn btn-primary btn-sm flex-fill">
+          <i class="bi bi-funnel"></i>
+        </button>
+        <a href="{{ url_for('reports') }}" class="btn btn-outline-secondary btn-sm flex-fill" title="Limpar">
+          <i class="bi bi-x-lg"></i>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{# ── Result table ──────────────────────────────────────────────────── #}
+<div class="mb-2 text-muted small">{{ tasks|length }} tarefa(s) encontrada(s)</div>
+
+{% if tasks %}
+<div class="table-responsive">
+  <table class="table table-hover table-bordered align-middle">
+    <thead class="table-primary">
+      <tr>
+        <th>#</th>
+        <th>Título</th>
+        <th>Responsável</th>
+        <th>Prazo</th>
+        <th>Prioridade</th>
+        <th>Status</th>
+        <th>Criado em</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+        <tr class="{% if task.is_overdue %}table-overdue{% endif %}">
+          <td class="text-muted small">{{ task.id }}</td>
+          <td>
+            <span class="fw-semibold">{{ task.title }}</span>
+            {% if task.is_overdue %}
+              <span class="badge bg-danger ms-1 small">Atrasada</span>
+            {% endif %}
+            {% if task.description %}
+              <div class="text-muted small text-truncate" style="max-width:240px">{{ task.description }}</div>
+            {% endif %}
+          </td>
+          <td>{{ task.responsible.name if task.responsible else '—' }}</td>
+          <td class="text-nowrap">{{ task.deadline_str }}</td>
+          <td><span class="badge priority-{{ task.priority }}">{{ task.priority_label }}</span></td>
+          <td><span class="badge status-badge-{{ task.status }}">{{ task.status_label }}</span></td>
+          <td class="text-nowrap text-muted small">{{ task.created_at.strftime('%d/%m/%Y') }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <div class="text-center text-muted py-5">
+    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+    Nenhuma tarefa corresponde aos filtros selecionados.
+  </div>
+{% endif %}
+{% endblock %}

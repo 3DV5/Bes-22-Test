@@ -1,0 +1,30 @@
+/* ── Priority badges ────────────────────────────────────────────────────── */
+.badge.priority-alta   { background-color: #dc3545; }
+.badge.priority-media  { background-color: #fd7e14; }
+.badge.priority-baixa  { background-color: #198754; }
+
+/* ── Status badges (used in reports) ───────────────────────────────────── */
+.badge.status-badge-pendente     { background-color: #6c757d; }
+.badge.status-badge-em_andamento { background-color: #0d6efd; }
+.badge.status-badge-concluida    { background-color: #198754; }
+
+/* ── Status select in dashboard ─────────────────────────────────────────── */
+.status-select { min-width: 130px; font-size: .82rem; }
+.status-select.status-pendente     { color: #6c757d; border-color: #6c757d; }
+.status-select.status-em_andamento { color: #0d6efd; border-color: #0d6efd; }
+.status-select.status-concluida    { color: #198754; border-color: #198754; }
+
+/* ── Overdue row highlight ──────────────────────────────────────────────── */
+tr.table-overdue { background-color: #fff5f5 !important; }
+tr.table-overdue:hover { background-color: #ffe0e0 !important; }
+
+/* ── Summary cards ───────────────────────────────────────────────────────── */
+.status-card-pendente     { border-left: 4px solid #6c757d !important; }
+.status-card-andamento    { border-left: 4px solid #0d6efd !important; color: #0d6efd; }
+.status-card-concluida    { border-left: 4px solid #198754 !important; color: #198754; }
+
+/* ── Misc ────────────────────────────────────────────────────────────────── */
+body { background-color: #f8f9fa; }
+.navbar { box-shadow: 0 2px 4px rgba(0,0,0,.12); }
+.card { border-radius: .6rem; }
+.table th { white-space: nowrap; }
