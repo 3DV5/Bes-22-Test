@@ -75,7 +75,7 @@ $tarefas = $stmt->fetchAll();
                         <?php else: ?>
                             <span class="badge-concluida">✓ Finalizada</span>
                         <?php endif; ?>
-                        <a href="?excluir=<?= $tarefa['id'] ?>" class="btn-excluir" onclick="return confirm('Excluir tarefa?')">🗑 Excluir</a>
+                        <a href="?excluir=<?= $tarefa['id'] ?>" class="btn-excluir" onclick="return confirm('Excluir taref?')">🗑 Excluir</a>
                     </div>
                 </li>
             <?php endforeach; ?>
